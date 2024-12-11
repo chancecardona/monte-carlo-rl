@@ -1,0 +1,11 @@
+{
+    "h_size": 16,
+    "n_training_episodes": 1200,
+    "n_evaluation_episodes": 15,
+    "max_t": 1200,
+    "gamma": 1.0,
+    "lr": 0.8e-2,
+    "env_id": env_id,
+    "state_space": s_size,
+    "action_space": a_size,
+}
