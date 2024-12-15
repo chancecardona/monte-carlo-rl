@@ -3,3 +3,5 @@ git+https://github.com/simoninithomas/gym-games
 huggingface_hub
 imageio-ffmpeg
 pyyaml==6.0
+matplotlib
+torch
