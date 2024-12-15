@@ -1,6 +1,12 @@
-pip install -r requirements-unit4.txt --break-system-packages
+## Monte Carlo RL using Policy Gradient Diffusion
 
-To push to huggingface:
+### Installation using UV
+```bash
+uv venv
+uv pip install -r requirements-unit4.txt --break-system-packages
+```
+
+### To push to huggingface
 `huggingface-cli login` after creating an identity token.
 
 

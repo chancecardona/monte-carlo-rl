@@ -20,27 +20,29 @@ import gym_pygame
 from huggingface_hub import notebook_login # To log to our Hugging Face account to be able to upload models to the Hub.
 import imageio
 
-device = torch.device("cuda:0" if torch.cuda.is_available() else "cpu")
-print(device)
-
-env_id = "CartPole-v1"
-# Create the env
-env = gym.make(env_id)
-
-# Create the evaluation env
-eval_env = gym.make(env_id)
-
-# Get the state space and action space
-s_size = env.observation_space.shape[0]
-a_size = env.action_space.n
-
-print("_____OBSERVATION SPACE_____ \n")
-print("The State Space is: ", s_size)
-print("Sample observation", env.observation_space.sample()) # Get a random observation
-
-print("\n _____ACTION SPACE_____ \n")
-print("The Action Space is: ", a_size)
-print("Action Space Sample", env.action_space.sample()) # Take a random action
+if __name__ == '__main__':
+    # Set the device to GPU if available
+    device = torch.device("cuda:0" if torch.cuda.is_available() else "cpu")
+    print(device)
+    
+    # Set the environment
+    env_id = "CartPole-v1"
+    # Create the env
+    env = gym.make(env_id)
+    # Create the evaluation env
+    eval_env = gym.make(env_id)
+    
+    # Get the state space and action space
+    s_size = env.observation_space.shape[0]
+    a_size = env.action_space.n
+    
+    print("_____OBSERVATION SPACE_____ \n")
+    print("The State Space is: ", s_size)
+    print("Sample observation", env.observation_space.sample()) # Get a random observation
+    
+    print("\n _____ACTION SPACE_____ \n")
+    print("The Action Space is: ", a_size)
+    print("Action Space Sample", env.action_space.sample()) # Take a random action
 
 class Policy(nn.Module):
     def __init__(self, s_size, a_size, h_size):
@@ -67,12 +69,13 @@ class Policy(nn.Module):
         state = torch.from_numpy(state).float().unsqueeze(0).to(device)
         probs = self.forward(state).cpu()
         m = Categorical(probs)
-        action = np.argmax(m)
+        action = m.sample(m)
         return action.item(), m.log_prob(action)
 
 
 debug_policy = Policy(s_size, a_size, 64).to(device)
 debug_policy.act(env.reset())
+
 
 def reinforce(policy, optimizer, n_training_episodes, max_t, gamma, print_every):
     # Help us to calculate the score during the training
