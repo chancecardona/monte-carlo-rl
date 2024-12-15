@@ -1,3 +1,5 @@
+import numpy as np
+
 def evaluate_agent(env, max_steps, n_eval_episodes, policy):
     """
     Evaluate the agent for ``n_eval_episodes`` episodes and returns average reward and std of reward.
@@ -14,7 +16,7 @@ def evaluate_agent(env, max_steps, n_eval_episodes, policy):
 
         for step in range(max_steps):
             action, _ = policy.act(state)
-            new_state, reward, done, info = env.step(action)
+            new_state, reward, done, trunc, info = env.step(action)
             total_rewards_ep += reward
 
             if done:

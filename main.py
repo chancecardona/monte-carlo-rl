@@ -1,9 +1,6 @@
 #!/bin/env python3
 import numpy as np
-np.bool = np.bool_
-
 import json
-
 import matplotlib.pyplot as plt
 
 # PyTorch
@@ -18,11 +15,11 @@ import gym
 import gym_pygame
 
 # Hugging Face Hub
-from huggingface_hub import notebook_login # To log to our Hugging Face account to be able to upload models to the Hub.
+from huggingface_hub import notebook_login
 import imageio
 
 # Import our functions
-from huggingface_utils import record_video
+from huggingface_utils import record_video, push_to_hub
 from reinforce import reinforce
 from policy import Policy
 from evaluate import evaluate_agent
@@ -35,9 +32,9 @@ if __name__ == '__main__':
     # Set the environment
     env_id = "CartPole-v1"
     # Create the env
-    env = gym.make(env_id)
+    env = gym.make(env_id, render_mode="rgb_array")
     # Create the evaluation env
-    eval_env = gym.make(env_id)
+    eval_env = gym.make(env_id, render_mode="rgb_array")
     
     # Get the state space and action space
     s_size = env.observation_space.shape[0]
@@ -101,7 +98,8 @@ if __name__ == '__main__':
     upload = input("Upload to Huggingface hub? y/n:\n")
     if upload.lower() == "y":
         repo_id = "kismet163/ReinforceMonteCarlo" 
-        push_to_hub(repo_id,
+        push_to_hub(env,
+                    repo_id,
                     cartpole_policy, # The model we want to save
                     cartpole_hyperparameters, # Hyperparameters
                     eval_env, # Evaluation environment

@@ -1,5 +1,13 @@
+import numpy as np
 from huggingface_hub import HfApi, snapshot_download
 from huggingface_hub.repocard import metadata_eval_result, metadata_save
+
+# PyTorch
+import torch
+import torch.nn as nn
+import torch.nn.functional as F
+import torch.optim as optim
+from torch.distributions import Categorical
 
 from pathlib import Path
 import datetime
@@ -9,6 +17,9 @@ import imageio
 import tempfile
 
 import os
+
+# Our code
+from evaluate import evaluate_agent
 
 def record_video(env, policy, out_directory, fps=30):
     """
@@ -21,17 +32,18 @@ def record_video(env, policy, out_directory, fps=30):
     images = []
     done = False
     state = env.reset()
-    img = env.render(mode='rgb_array')
+    img = env.render()
     images.append(img)
     while not done:
         # Take the action (index) that have the maximum expected future reward given that state
         action, _ = policy.act(state)
-        state, reward, done, info = env.step(action) # We directly put next_state = state for recording logic
-        img = env.render(mode='rgb_array')
+        state, reward, done, trunc, info = env.step(action) # We directly put next_state = state for recording logic
+        img = env.render()
         images.append(img)
     imageio.mimsave(out_directory, [np.array(img) for i, img in enumerate(images)], fps=fps)
 
-def push_to_hub(repo_id,
+def push_to_hub(env,
+                repo_id,
                 model,
                 hyperparameters,
                 eval_env,
@@ -119,8 +131,8 @@ def push_to_hub(repo_id,
       metadata = {**metadata, **eval}
     
       model_card = f"""
-    # **Reinforce** Agent playing **{env_id}**
-    This is a trained model of a **Reinforce** agent playing **{env_id}** .
+    # **Reinforce** Agent playing **{env_name}**
+    This is a trained model of a **Reinforce** agent playing **{env_name}** .
     To learn to use this model and train yours check Unit 4 of the Deep Reinforcement Learning Course: https://huggingface.co/deep-rl-course/unit4/introduction
     """
     
