@@ -5,3 +5,4 @@ imageio-ffmpeg
 pyyaml==6.0
 matplotlib
 torch
+numpy==1.23.5

@@ -1,4 +1,13 @@
-def reinforce(policy, optimizer, n_training_episodes, max_t, gamma, print_every):
+from collections import deque
+import numpy as np
+# PyTorch
+import torch
+import torch.nn as nn
+import torch.nn.functional as F
+import torch.optim as optim
+from torch.distributions import Categorical
+
+def reinforce(env, policy, optimizer, n_training_episodes, max_t, gamma, print_every):
     # Help us to calculate the score during the training
     scores_deque = deque(maxlen=100)
     scores = []
@@ -11,7 +20,8 @@ def reinforce(policy, optimizer, n_training_episodes, max_t, gamma, print_every)
         for t in range(max_t):
             action, log_prob = policy.act(state)
             saved_log_probs.append(log_prob)
-            state, reward, done, _ = env.step(action)
+            #import pdb; pdb.set_trace()
+            state, reward, done, _trunc, _info = env.step(action)
             rewards.append(reward)
             if done:
                 break

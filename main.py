@@ -1,6 +1,8 @@
+#!/bin/env python3
 import numpy as np
+np.bool = np.bool_
 
-from collections import deque
+import json
 
 import matplotlib.pyplot as plt
 
@@ -22,6 +24,7 @@ import imageio
 # Import our functions
 from huggingface_utils import record_video
 from reinforce import reinforce
+from policy import Policy
 from evaluate import evaluate_agent
 
 if __name__ == '__main__':
@@ -48,8 +51,26 @@ if __name__ == '__main__':
     print("The Action Space is: ", a_size)
     print("Action Space Sample", env.action_space.sample()) # Take a random action
 
-    debug_policy = Policy(s_size, a_size, 64).to(device)
+    # Set policy passing in the device
+    debug_policy = Policy(s_size, a_size, 64, device).to(device)
     debug_policy.act(env.reset())
+
+    # Load hyperparameters
+    #with open('cartpole_hyperparameters.json', 'r') as f:
+    #    # Load the JSON data as a dictionary
+    #    cartpole_hyperparameters = json.load(f)
+    cartpole_hyperparameters =  {
+        "h_size": 16,
+        "n_training_episodes": 1200,
+        "n_evaluation_episodes": 15,
+        "max_t": 1200,
+        "gamma": 1.0,
+        "lr": 0.8e-2,
+        "env_id": env_id,
+        "state_space": s_size,
+        "action_space": a_size
+    }
+
 
     # Create policy and place it to the device
     cartpole_policy = Policy(
@@ -60,6 +81,7 @@ if __name__ == '__main__':
     cartpole_optimizer = optim.Adam(cartpole_policy.parameters(), lr=cartpole_hyperparameters["lr"])
 
     scores = reinforce(
+        env,
         cartpole_policy,
         cartpole_optimizer,
         cartpole_hyperparameters["n_training_episodes"],
@@ -68,9 +90,20 @@ if __name__ == '__main__':
         100,
     )
 
-    evaluate_agent(
+    evaluate_scores = evaluate_agent(
         eval_env, 
         cartpole_hyperparameters["max_t"], 
         cartpole_hyperparameters["n_evaluation_episodes"], 
         cartpole_policy
     )
+    
+    # Huggingface Hub
+    upload = input("Upload to Huggingface hub? y/n:\n")
+    if upload.lower() == "y":
+        repo_id = "kismet163/ReinforceMonteCarlo" 
+        push_to_hub(repo_id,
+                    cartpole_policy, # The model we want to save
+                    cartpole_hyperparameters, # Hyperparameters
+                    eval_env, # Evaluation environment
+                    video_fps=30
+                    )

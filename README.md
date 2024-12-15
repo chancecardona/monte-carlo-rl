@@ -3,7 +3,7 @@
 ### Installation using UV
 ```bash
 uv venv
-uv pip install -r requirements-unit4.txt --break-system-packages
+uv pip install -r requirements.txt --break-system-packages
 ```
 
 ### To push to huggingface

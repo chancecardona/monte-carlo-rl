@@ -7,5 +7,5 @@
     "lr": 0.8e-2,
     "env_id": env_id,
     "state_space": s_size,
-    "action_space": a_size,
+    "action_space": a_size
 }
