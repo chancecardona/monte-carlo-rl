@@ -58,8 +58,8 @@ if __name__ == '__main__':
     #    cartpole_hyperparameters = json.load(f)
     cartpole_hyperparameters =  {
         "h_size": 16,
-        "n_training_episodes": 1200,
-        "n_evaluation_episodes": 15,
+        "n_training_episodes": 1100,
+        "n_evaluation_episodes": 20,
         "max_t": 1200,
         "gamma": 1.0,
         "lr": 0.8e-2,
@@ -95,7 +95,7 @@ if __name__ == '__main__':
     )
     
     # Huggingface Hub
-    upload = input("Upload to Huggingface hub? y/n:\n")
+    upload = "y" #input("Upload to Huggingface hub? y/n:\n")
     if upload.lower() == "y":
         repo_id = "kismet163/ReinforceMonteCarlo" 
         push_to_hub(env,
