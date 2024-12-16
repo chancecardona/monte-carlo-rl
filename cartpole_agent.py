@@ -12,9 +12,9 @@ class CartPoleMonteCarlo:
     def __init__(self, trial, device):
         self.env_id = "CartPole-v1"
         # Create the env
-        self.env = gym.make(self.env_id, render_mode="rgb_array", apply_api_compatibility=True)
+        self.env = gym.make(self.env_id, render_mode="rgb_array")
         # Create the evaluation env
-        self.eval_env = gym.make(self.env_id, render_mode="rgb_array", apply_api_compatibility=True)
+        self.eval_env = gym.make(self.env_id, render_mode="rgb_array")
         
         # Get the state space and action space
         self.s_size = self.env.observation_space.shape[0]
