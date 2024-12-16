@@ -7,7 +7,7 @@ uv pip install -r requirements.txt --break-system-packages
 ```
 
 ### To push to huggingface
-`huggingface-cli login` after creating an identity token at huggingface.co
+`huggingface-cli login` after creating an identity token at [huggingface.co](https://huggingface.co/kismet163/ReinforceMonteCarlo)
 
 
 ## Running
@@ -24,7 +24,7 @@ python3 main.py -e pixelcopter
 `-u False` to prevent uploading to huggingface (which is the default)
 
 ## File Structure
-This repo uses Optuna to optimize the trial hyperparameters for the agent.
+This repo uses Optuna to optimize the trial hyperparameters for the agent (using the NGSAII hyperparameter tuning algorithm).
 - The NN architecture (layers, activation funcs, etc) for the agent (dependent on the environment) is in `<env_name>_policy.py`.  
 - The NN model class definition is in `<env_name>_agent.py`  which contains the Train, Evaluate loops.  
 - `optuna_hyperparameter_sampler.py` contains the hyperparameter definitions for Optuna.
