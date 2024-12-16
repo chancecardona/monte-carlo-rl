@@ -58,7 +58,7 @@ if __name__ == '__main__':
         print("Running in Cartpole env.")
         # Optimize hyperparameters with OpTuna
         study = optuna.create_study(direction="maximize")
-        study.optimize(cartpole_objective, n_trials=15, timeout=1600)
+        study.optimize(cartpole_objective, n_trials=10, timeout=1600)
         trial = study.best_trial
         print("Finished Optuna optimization.")
 
