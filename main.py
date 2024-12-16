@@ -21,11 +21,8 @@ import imageio
 
 # Import our functions
 from huggingface_utils import record_video, push_to_hub
-from pixelcopter_reinforce import reinforce
 from pixelcopter_policy import PixelcopterPolicy
 from cartpole_policy import CartpolePolicy
-from evaluate import evaluate_agent
-
 from cartpole_agent import CartPoleMonteCarlo
 from pixelcopter_agent import PixelCopterMonteCarlo
 import optuna
@@ -61,7 +58,7 @@ if __name__ == '__main__':
         print("Running in Cartpole env.")
         # Optimize hyperparameters with OpTuna
         study = optuna.create_study(direction="maximize")
-        study.optimize(cartpole_objective, n_trials=10, timeout=1200)
+        study.optimize(cartpole_objective, n_trials=15, timeout=1600)
         trial = study.best_trial
         print("Finished Optuna optimization.")
 
@@ -92,9 +89,6 @@ if __name__ == '__main__':
         study.optimize(pixelcopter_objective, n_trials=3, timeout=1200)
         trial = study.best_trial
         print("Finished Optuna optimization.")
-        print("Best Params: ")
-        for key, value in trial.params.items():
-            print("    {}: {}".format(key, value))
 
         # Create agent with best hyperparameters and push to hub
         best_agent = PixelCopterMonteCarlo(trial, device)

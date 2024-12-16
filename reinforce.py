@@ -20,9 +20,7 @@ def reinforce(env, policy, optimizer, n_training_episodes, max_t, gamma, print_e
         for t in range(max_t):
             action, log_prob = policy.act(state)
             saved_log_probs.append(log_prob)
-            #import pdb; pdb.set_trace()
             state, reward, done, _trunc, _info = env.step(action)
-            #state, reward, done, _info = env.step(action)
             rewards.append(reward)
             if done:
                 break

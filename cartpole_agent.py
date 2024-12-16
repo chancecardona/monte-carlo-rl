@@ -1,6 +1,6 @@
-from cartpole_reinforce import reinforce
-from cartpole_policy import CartpolePolicy
+from reinforce import reinforce
 from evaluate import evaluate_agent
+from cartpole_policy import CartpolePolicy
 from optuna_hyperparameter_sampler import sample_cartpole_params
 import torch.optim as optim
 
@@ -12,9 +12,9 @@ class CartPoleMonteCarlo:
     def __init__(self, trial, device):
         self.env_id = "CartPole-v1"
         # Create the env
-        self.env = gym.make(self.env_id, render_mode="rgb_array")
+        self.env = gym.make(self.env_id, render_mode="rgb_array", apply_api_compatibility=True)
         # Create the evaluation env
-        self.eval_env = gym.make(self.env_id, render_mode="rgb_array")
+        self.eval_env = gym.make(self.env_id, render_mode="rgb_array", apply_api_compatibility=True)
         
         # Get the state space and action space
         self.s_size = self.env.observation_space.shape[0]
