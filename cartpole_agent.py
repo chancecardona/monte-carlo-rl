@@ -1,7 +1,7 @@
 from cartpole_reinforce import reinforce
 from cartpole_policy import CartpolePolicy
 from evaluate import evaluate_agent
-from optuna_optimize import sample_cartpole_params
+from optuna_hyperparameter_sampler import sample_cartpole_params
 import torch.optim as optim
 
 # Gym
