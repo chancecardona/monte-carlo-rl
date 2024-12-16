@@ -70,9 +70,9 @@ if __name__ == '__main__':
         #    cartpole_hyperparameters = json.load(f)
         cartpole_hyperparameters =  {
             "h_size": 16,
-            "n_training_episodes": 110,
+            "n_training_episodes": 1100,
             "n_evaluation_episodes": 20,
-            "max_t": 1200,
+            "max_t": 1100,
             "gamma": 1.0,
             "lr": 0.8e-2,
             "env_id": env_id,
