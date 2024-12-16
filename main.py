@@ -21,7 +21,7 @@ import imageio
 
 # Import our functions
 from huggingface_utils import record_video, push_to_hub
-from reinforce import reinforce
+from pixelcopter_reinforce import reinforce
 from pixelcopter_policy import PixelcopterPolicy
 from cartpole_policy import CartpolePolicy
 from evaluate import evaluate_agent
