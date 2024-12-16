@@ -60,7 +60,7 @@ if __name__ == '__main__':
         print("Running in Cartpole env.")
         # Optimize hyperparameters with OpTuna
         study = optuna.create_study(direction="maximize")
-        study.optimize(cartpole_objective, n_trials=1, timeout=100)
+        study.optimize(cartpole_objective, n_trials=5, timeout=600)
         trial = study.best_trial
         print("Finished Optuna optimization.")
         print("Best Params: ")
@@ -69,7 +69,8 @@ if __name__ == '__main__':
 
         # Create agent with best hyperparameters and push to hub
         best_agent = CartPoleMonteCarlo(trial, device)
-        best_agent.cartpole_hyperparameters = trial.params
+        best_agent.cartpole_hyperparameters.update(trial.params)
+        print("Best agent params: ", best_agent.cartpole_hyperparameters)
         best_agent.train()
         best_agent.evaluate()
         
@@ -99,7 +100,7 @@ if __name__ == '__main__':
 
         # Create agent with best hyperparameters and push to hub
         best_agent = PixelCopterMonteCarlo(trial, device)
-        best_agent.pixelcopter_hyperparameters = trial.params
+        best_agent.pixelcopter_hyperparameters.update(trial.params)
         best_agent.train()
         best_agent.evaluate()
 

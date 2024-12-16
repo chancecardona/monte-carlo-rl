@@ -93,8 +93,10 @@ def push_to_hub(
         eval_datetime = datetime.datetime.now()
         eval_form_datetime = eval_datetime.isoformat()
         
+        #env_name = eval_env.env_id
+        env_name = hyperparameters["env_id"]
         evaluate_data = {
-              "env_id": hyperparameters["env_id"],
+              "env_id": env_name,
               "mean_reward": mean_reward,
               "n_evaluation_episodes": hyperparameters["n_evaluation_episodes"],
               "eval_datetime": eval_form_datetime,
@@ -104,9 +106,7 @@ def push_to_hub(
         with open(local_directory / "results.json", "w") as outfile:
             json.dump(evaluate_data, outfile)
         
-        # Step 5: Create the model card
-        env_name = eval_env.env_id
-        
+        # Step 5: Create the model card 
         metadata = {}
         metadata["tags"] = [
               env_name,
