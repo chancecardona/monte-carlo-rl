@@ -26,6 +26,17 @@ from pixelcopter_policy import PixelcopterPolicy
 from cartpole_policy import CartpolePolicy
 from evaluate import evaluate_agent
 
+from cartpole_agent import CartPoleMonteCarlo
+import optuna
+
+# Objective function for Optuna
+def cartpole_objective(trial: optuna.Trial):
+    agent = CartPoleMonteCarlo(trial, device)
+    agent.train()
+    scores = agent.evaluate()
+    #import pdb; pdb.set_trace()
+    return scores[0].mean()
+
 if __name__ == '__main__':
     parser = argparse.ArgumentParser()
     parser.add_argument("-e", "--environment", type=str, choices=["cartpole", "pixelcopter"], default="cartpole",
@@ -42,81 +53,33 @@ if __name__ == '__main__':
     # Set the environment
     if args.environment == "cartpole":
         print("Running in Cartpole env.")
-        env_id = "CartPole-v1"
-        # Create the env
-        env = gym.make(env_id, render_mode="rgb_array")
-        # Create the evaluation env
-        eval_env = gym.make(env_id, render_mode="rgb_array")
-        
-        # Get the state space and action space
-        s_size = env.observation_space.shape[0]
-        a_size = env.action_space.n
-        
-        print("_____OBSERVATION SPACE_____ \n")
-        print("The State Space is: ", s_size)
-        print("Sample observation", env.observation_space.sample()) # Get a random observation
-        
-        print("\n _____ACTION SPACE_____ \n")
-        print("The Action Space is: ", a_size)
-        print("Action Space Sample", env.action_space.sample()) # Take a random action
+        # Optimize hyperparameters with OpTuna
+        study = optuna.create_study(direction="maximize")
+        study.optimize(cartpole_objective, n_trials=100)
+        trial = study.best_trial
+        print("Finished Optuna optimization.")
+        print("Best Params: ")
+        for key, value in trial.params.items():
+            print("    {}: {}".format(key, value))
 
-        # Set policy passing in the device
-        debug_policy = CartpolePolicy(s_size, a_size, 64, device).to(device)
-        debug_policy.act(env.reset())
-
-        # Load hyperparameters
-        #with open('cartpole_hyperparameters.json', 'r') as f:
-        #    # Load the JSON data as a dictionary
-        #    cartpole_hyperparameters = json.load(f)
-        cartpole_hyperparameters =  {
-            "h_size": 16,
-            "n_training_episodes": 1100,
-            "n_evaluation_episodes": 20,
-            "max_t": 1100,
-            "gamma": 1.0,
-            "lr": 0.8e-2,
-            "env_id": env_id,
-            "state_space": s_size,
-            "action_space": a_size
-        }
-
-
-        # Create policy and place it to the device
-        cartpole_policy = CartpolePolicy(
-            cartpole_hyperparameters["state_space"],
-            cartpole_hyperparameters["action_space"],
-            cartpole_hyperparameters["h_size"],
-            device,
-        ).to(device)
-        cartpole_optimizer = optim.Adam(cartpole_policy.parameters(), lr=cartpole_hyperparameters["lr"])
-
-        scores = reinforce(
-            env,
-            cartpole_policy,
-            cartpole_optimizer,
-            cartpole_hyperparameters["n_training_episodes"],
-            cartpole_hyperparameters["max_t"],
-            cartpole_hyperparameters["gamma"],
-            100,
-        )
-
-        evaluate_scores = evaluate_agent(
-            eval_env, 
-            cartpole_hyperparameters["max_t"], 
-            cartpole_hyperparameters["n_evaluation_episodes"], 
-            cartpole_policy
-        )
+        # Create agent with best hyperparameters and push to hub
+        best_agent = CartPoleMonteCarlo(trial, device)
+        best_agent.cartpole_hyperparameters = trial.params
+        best_agent.train()
+        best_agent.evaluate()
         
         # Huggingface Hub
         if args.upload:
             repo_id = "kismet163/ReinforceMonteCarlo" 
             push_to_hub(env,
                         repo_id,
-                        cartpole_policy, # The model we want to save
-                        cartpole_hyperparameters, # Hyperparameters
-                        eval_env, # Evaluation environment
+                        best_agent.cartpole_policy, # The model we want to save
+                        best_agent.cartpole_hyperparameters, # Hyperparameters
+                        best_agent.eval_env, # Evaluation environment
                         video_fps=30
                         )
+
+
     elif args.environment == "pixelcopter":
         print("Running in Pixelcopter env.")
         env_id = "Pixelcopter-PLE-v0"
