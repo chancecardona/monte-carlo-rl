@@ -43,7 +43,7 @@ def record_video(env, policy, out_directory, fps=30):
         images.append(img)
     imageio.mimsave(out_directory, [np.array(img) for i, img in enumerate(images)], fps=fps)
 
-def push_to_hub(env,
+def push_to_hub(
                 repo_id,
                 model,
                 hyperparameters,
@@ -58,7 +58,6 @@ def push_to_hub(env,
     - It generates a replay video of the agent
     - It pushes everything to the Hub
     
-    :param env: env: The environment object from Gym to use 
     :param repo_id: repo_id: id of the model repository from the Hugging Face Hub
     :param model: the pytorch model we want to save
     :param hyperparameters: training hyperparameters
@@ -106,7 +105,7 @@ def push_to_hub(env,
             json.dump(evaluate_data, outfile)
         
         # Step 5: Create the model card
-        env_name = hyperparameters["env_id"]
+        env_name = eval_env.env_id
         
         metadata = {}
         metadata["tags"] = [
@@ -154,7 +153,7 @@ def push_to_hub(env,
     
         # Step 6: Record a video
         video_path =  local_directory / "replay.mp4"
-        record_video(env, model, video_path, video_fps)
+        record_video(eval_env, model, video_path, video_fps)
     
         # Step 7. Push everything to the Hub
         attempt = 0

@@ -34,7 +34,12 @@ def cartpole_objective(trial: optuna.Trial):
     agent = CartPoleMonteCarlo(trial, device)
     agent.train()
     scores = agent.evaluate()
-    #import pdb; pdb.set_trace()
+    return scores[0].mean()
+
+def pixelcopter_objective(trial: optuna.Trial):
+    agent = PixelCopterMonteCarlo(trial, device)
+    agent.train()
+    scores = agent.evaluate()
     return scores[0].mean()
 
 if __name__ == '__main__':
@@ -55,7 +60,7 @@ if __name__ == '__main__':
         print("Running in Cartpole env.")
         # Optimize hyperparameters with OpTuna
         study = optuna.create_study(direction="maximize")
-        study.optimize(cartpole_objective, n_trials=100)
+        study.optimize(cartpole_objective, n_trials=1, timeout=100)
         trial = study.best_trial
         print("Finished Optuna optimization.")
         print("Best Params: ")
@@ -71,7 +76,7 @@ if __name__ == '__main__':
         # Huggingface Hub
         if args.upload:
             repo_id = "kismet163/ReinforceMonteCarlo" 
-            push_to_hub(env,
+            push_to_hub(
                         repo_id,
                         best_agent.cartpole_policy, # The model we want to save
                         best_agent.cartpole_hyperparameters, # Hyperparameters
@@ -82,57 +87,27 @@ if __name__ == '__main__':
 
     elif args.environment == "pixelcopter":
         print("Running in Pixelcopter env.")
-        env_id = "Pixelcopter-PLE-v0"
-        env = gym.make(env_id)
-        eval_env = gym.make(env_id)
-        s_size = env.observation_space.shape[0]
-        a_size = env.action_space.n
         
-        print("_____OBSERVATION SPACE_____ \n")
-        print("The State Space is: ", s_size)
-        print("Sample observation", env.observation_space.sample())  # Get a random observation
-        
-        print("\n _____ACTION SPACE_____ \n")
-        print("The Action Space is: ", a_size)
-        print("Action Space Sample", env.action_space.sample())  # Take a random action
+        # Optimize hyperparameters with OpTuna
+        study = optuna.create_study(direction="maximize")
+        study.optimize(pixelcopter_objective, n_trials=3, timeout=1200)
+        trial = study.best_trial
+        print("Finished Optuna optimization.")
+        print("Best Params: ")
+        for key, value in trial.params.items():
+            print("    {}: {}".format(key, value))
 
-        pixelcopter_hyperparameters = {
-            "h_size": 64,
-            "n_training_episodes": 50000,
-            "n_evaluation_episodes": 10,
-            "max_t": 10000,
-            "gamma": 0.99,
-            "lr": 1e-4,
-            "env_id": env_id,
-            "state_space": s_size,
-            "action_space": a_size,
-        }
-        # Create policy and place it to the device
-        # torch.manual_seed(50)
-        pixelcopter_policy = PixelcopterPolicy(
-            pixelcopter_hyperparameters["state_space"],
-            pixelcopter_hyperparameters["action_space"],
-            pixelcopter_hyperparameters["h_size"],
-            device,
-        ).to(device)
-        pixelcopter_optimizer = optim.Adam(pixelcopter_policy.parameters(), lr=pixelcopter_hyperparameters["lr"])
-        
-        scores = reinforce(
-            env,
-            pixelcopter_policy,
-            pixelcopter_optimizer,
-            pixelcopter_hyperparameters["n_training_episodes"],
-            pixelcopter_hyperparameters["max_t"],
-            pixelcopter_hyperparameters["gamma"],
-            1000,
-        )
+        # Create agent with best hyperparameters and push to hub
+        best_agent = PixelCopterMonteCarlo(trial, device)
+        best_agent.pixelcopter_hyperparameters = trial.params
+        best_agent.train()
+        best_agent.evaluate()
 
         repo_id = "kismet163/ReinforceMonteCarlo" 
         push_to_hub(
-            env,
             repo_id,
-            pixelcopter_policy,  # The model we want to save
-            pixelcopter_hyperparameters,  # Hyperparameters
-            eval_env,  # Evaluation environment
+            self.pixelcopter_policy,  # The model we want to save
+            self.pixelcopter_hyperparameters,  # Hyperparameters
+            self.eval_env,  # Evaluation environment
             video_fps=30
         )
