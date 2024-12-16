@@ -21,7 +21,8 @@ def reinforce(env, policy, optimizer, n_training_episodes, max_t, gamma, print_e
             action, log_prob = policy.act(state)
             saved_log_probs.append(log_prob)
             #import pdb; pdb.set_trace()
-            state, reward, done, _trunc, _info = env.step(action)
+            #state, reward, done, _trunc, _info = env.step(action)
+            state, reward, done, _info = env.step(action)
             rewards.append(reward)
             if done:
                 break
@@ -66,7 +67,7 @@ def reinforce(env, policy, optimizer, n_training_episodes, max_t, gamma, print_e
             returns.appendleft(gamma * disc_return_t + rewards[t])
 
         ## standardization of the returns is employed to make training more stable
-        eps = np.finfo(np.float32).eps.item()
+        eps = np.finfo(np.float64).eps.item()
         ## eps is the smallest representable float, which is
         # added to the standard deviation of the returns to avoid numerical instabilities
         returns = torch.tensor(returns)

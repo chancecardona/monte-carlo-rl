@@ -58,6 +58,7 @@ def push_to_hub(env,
     - It generates a replay video of the agent
     - It pushes everything to the Hub
     
+    :param env: env: The environment object from Gym to use 
     :param repo_id: repo_id: id of the model repository from the Hugging Face Hub
     :param model: the pytorch model we want to save
     :param hyperparameters: training hyperparameters
