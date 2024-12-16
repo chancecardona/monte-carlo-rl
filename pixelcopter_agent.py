@@ -1,7 +1,8 @@
 from pixelcopter_reinforce import reinforce
-from pixelcopter_policy import PixelCopterPolicy
+from pixelcopter_policy import PixelcopterPolicy
 from evaluate import evaluate_agent
 from optuna_hyperparameter_sampler import sample_pixelcopter_params
+import torch
 import torch.optim as optim
 
 # Gym
@@ -12,9 +13,9 @@ class PixelCopterMonteCarlo:
     def __init__(self, trial, device):
         self.env_id = "Pixelcopter-PLE-v0"
         # Create the env
-        self.env = gym.make(self.env_id, render_mode="rgb_array")
+        self.env = gym.make(self.env_id)
         # Create the evaluation env
-        self.eval_env = gym.make(self.env_id, render_mode="rgb_array")
+        self.eval_env = gym.make(self.env_id)
         
         # Get the state space and action space
         self.s_size = self.env.observation_space.shape[0]
@@ -29,7 +30,7 @@ class PixelCopterMonteCarlo:
         print("Action Space Sample", self.env.action_space.sample()) # Take a random action
 
         # Set policy passing in the device
-        self.debug_policy = CartpolePolicy(self.s_size, self.a_size, 64, device).to(device)
+        self.debug_policy = PixelcopterPolicy(self.s_size, self.a_size, 64, device).to(device)
         self.debug_policy.act(self.env.reset())
 
         # Get Hyperparameters to make real policy

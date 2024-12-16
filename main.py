@@ -27,6 +27,7 @@ from cartpole_policy import CartpolePolicy
 from evaluate import evaluate_agent
 
 from cartpole_agent import CartPoleMonteCarlo
+from pixelcopter_agent import PixelCopterMonteCarlo
 import optuna
 
 # Objective function for Optuna
@@ -60,12 +61,9 @@ if __name__ == '__main__':
         print("Running in Cartpole env.")
         # Optimize hyperparameters with OpTuna
         study = optuna.create_study(direction="maximize")
-        study.optimize(cartpole_objective, n_trials=5, timeout=600)
+        study.optimize(cartpole_objective, n_trials=10, timeout=1200)
         trial = study.best_trial
         print("Finished Optuna optimization.")
-        print("Best Params: ")
-        for key, value in trial.params.items():
-            print("    {}: {}".format(key, value))
 
         # Create agent with best hyperparameters and push to hub
         best_agent = CartPoleMonteCarlo(trial, device)

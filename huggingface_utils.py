@@ -93,7 +93,6 @@ def push_to_hub(
         eval_datetime = datetime.datetime.now()
         eval_form_datetime = eval_datetime.isoformat()
         
-        #env_name = eval_env.env_id
         env_name = hyperparameters["env_id"]
         evaluate_data = {
               "env_id": env_name,
