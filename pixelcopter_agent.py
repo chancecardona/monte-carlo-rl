@@ -13,9 +13,9 @@ class PixelCopterMonteCarlo:
     def __init__(self, trial, device):
         self.env_id = "Pixelcopter-PLE-v0"
         # Create the env
-        self.env = gym.make(self.env_id, apply_api_compatibility=True)
+        self.env = gym.make(self.env_id, apply_api_compatibility=True, render_mode="rgb_array")
         # Create the evaluation env
-        self.eval_env = gym.make(self.env_id, apply_api_compatibility=True)
+        self.eval_env = gym.make(self.env_id, apply_api_compatibility=True, render_mode="rgb_array")
         
         # Get the state space and action space
         self.s_size = self.env.observation_space.shape[0]

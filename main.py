@@ -99,8 +99,8 @@ if __name__ == '__main__':
         repo_id = "kismet163/ReinforceMonteCarlo" 
         push_to_hub(
             repo_id,
-            self.pixelcopter_policy,  # The model we want to save
-            self.pixelcopter_hyperparameters,  # Hyperparameters
-            self.eval_env,  # Evaluation environment
+            best_agent.pixelcopter_policy,  # The model we want to save
+            best_agent.pixelcopter_hyperparameters,  # Hyperparameters
+            best_agent.eval_env,  # Evaluation environment
             video_fps=30
         )

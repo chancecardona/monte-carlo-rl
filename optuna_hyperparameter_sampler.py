@@ -21,7 +21,7 @@ def sample_cartpole_params(trial: optuna.Trial) -> Dict[str, Any]:
 
 def sample_pixelcopter_params(trial: optuna.Trial) -> Dict[str, Any]:
     h_size = 64 # Keep constant for now
-    n_training_episodes = 50000 - trial.suggest_int("n_training_episodes", 10, 25000, log=True) # Subtract with Log since we want more samples near more training eps
+    n_training_episodes = 40000 - trial.suggest_int("n_training_episodes", 1000, 30000, log=True) # Subtract with Log since we want more samples near more training eps
     n_evaluation_episodes = 20 - trial.suggest_int("n_evaluation_episodes", 5, 14, log=True)
     max_t = trial.suggest_categorical("max_t", [5000, 10000, 15000, 20000])
     gamma = 1 - trial.suggest_float("gamma", 0.0001, 0.9, log=True)
